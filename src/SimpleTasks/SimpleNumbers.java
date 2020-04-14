@@ -11,7 +11,7 @@ public class SimpleNumbers {
          }
 
         for(int i=9;i<=max;i+=2){
-            int check = i%3*i%5*i%7*i%9;
+            int check = i%3*i%5*i%7;
             if ((check==0)|(Math.sqrt(i)%1==0)) {
                 continue;
             }
