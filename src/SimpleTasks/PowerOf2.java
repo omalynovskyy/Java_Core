@@ -12,7 +12,10 @@ public class PowerOf2 {
 
     }
     static void checkPower2(int n){
-        if(n/2 == 1){
+
+        if(n < 2){
+            System.out.println("No");
+        } else if(n == 2){
             System.out.println("Yes");
         } else if(n%2 == 0){
             checkPower2(n/2);
