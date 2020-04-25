@@ -4,14 +4,13 @@ import java.util.Arrays;
 
 public class Deck {
     private int value;
-    private Suite[] suite = Suite.values();
-    static Card[] emptyDeck = new Card[36];
+    Card[] emptyDeck = new Card[36];
 
     void newDeck() {
         value = 1;
         for (int i = 0; i < emptyDeck.length; ) {
-            for (int j = 0; j < suite.length;) {
-                emptyDeck[i++] = new Card(suite[j++], value);
+            for (Suite suite: Suite.values()) {
+                emptyDeck[i++] = new Card(suite, value);
             }
             value++;
         }
