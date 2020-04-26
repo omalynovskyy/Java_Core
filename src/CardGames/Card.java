@@ -4,6 +4,9 @@ public class Card {
     private Suite suite;
     private int power;
 
+    public Card() {
+    }
+
     public Card(Suite suite, int power) {
         this.suite = suite;
         this.power = power;

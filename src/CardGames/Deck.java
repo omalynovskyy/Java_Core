@@ -19,16 +19,18 @@ public class Deck {
 
     void mixDeck(){
         Random random = new Random();
-        int cardNum = 0;
+        int swapCard;
+        Card tempCard = new Card();
         for(int i = 0; i < startDeck.length; i++){
-            if(i == cardNum){
-                cardNum = random.nextInt(36);
-            }
+            swapCard = random.nextInt(36);
+            tempCard.setSuite(startDeck[swapCard].getSuite());
+            tempCard.setPower(startDeck[swapCard].getPower());
+            startDeck[swapCard].setSuite(startDeck[i].getSuite());
+            startDeck[swapCard].setPower(startDeck[i].getPower());
+            startDeck[i].setSuite(tempCard.getSuite());
+            startDeck[i].setPower(tempCard.getPower());
+
         }
-
-
-
-
     }
 
     @Override

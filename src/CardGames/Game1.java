@@ -5,5 +5,9 @@ public class Game1 {
     public static void main(String[] args) {
         deck.newDeck();
         System.out.println(deck.toString());
+        deck.mixDeck();
+        System.out.println(deck.toString());
+        deck.mixDeck();
+        System.out.println(deck.toString());
     }
 }
