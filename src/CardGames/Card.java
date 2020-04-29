@@ -27,4 +27,9 @@ public class Card {
     public void setPower(int power) {
         this.power = power;
     }
+
+    @Override
+    public String toString() {
+        return power + " & " + suite + "; ";
+    }
 }
