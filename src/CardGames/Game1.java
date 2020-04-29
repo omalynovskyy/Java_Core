@@ -36,28 +36,23 @@ public class Game1 {
     }
     
     static void player1TakesCards(int stCount, int p1FreePlace) {
-        player1[p1FreePlace++ % player1.length] = player1[stCount];
-        player1[p1FreePlace++ % player1.length] = player2[stCount];
-        player1[stCount] = null;
-        player2[stCount] = null;
-        System.out.println("player1 takes cards");
-        if (stCount <= 0) {
-            if (player1[stCount + player1.length - 1] == null) {
-                mainGame(stepCount++ % player1.length, pl1FreePlace, pl2FreePlace);
-            } else {
-                player1TakesCards(stCount - 1, p1FreePlace);
-            }
-        } else {
-            if (player1[stCount - 1] == null) {
-                mainGame(stepCount++ % player1.length, pl1FreePlace, pl2FreePlace);
-            } else {
+        if (stCount == 0) {
+            stCount = player1.length;
+            if (player1[stCount - 1] != null) {
                 player1TakesCards(stCount - 1, p1FreePlace);
             }
         }
+        if (player1[stCount - 1] != null) {
+                player1TakesCards(stCount - 1, p1FreePlace);
+            }
+        player1[p1FreePlace++ % player1.length] = player1[stCount];
+        player1[p1FreePlace++ % player1.length] = player2[stCount];
+        player1[stCount] = null;
+        player2[stCount++] = null;
+        System.out.println("player1 takes cards");
     }
 
     static void player2TakesCards(int stCount, int p2FreePlace){
-        if (player2[stCount] == null) return;
         player2[p2FreePlace++ % player1.length] = player1[stCount];
         player1[p2FreePlace++ % player1.length] = player2[stCount];
         player1[stCount] = null;
@@ -88,7 +83,7 @@ public class Game1 {
         } else if (stepResult > 0){
             if(stepResult < 8){
                 player1TakesCards(stepCount, pl1FreePlace);
-                mainGame(stepCount % player1.length, pl1FreePlace, pl2FreePlace);
+
             }
             player2TakesCards(stepCount, pl2FreePlace);
         } else if (stepResult < 0){
