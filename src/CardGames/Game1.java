@@ -8,11 +8,10 @@ public class Game1 {
     static Card[] player1 = new Card[deckLength];
     static Card[] player2 = new Card[deckLength];
 
-    static int currentCard = 0;
     static int step = 0;
+    static int currentCard = 0;
     static int pl1FreePlace = deckLength/2;
     static int pl2FreePlace = deckLength/2;
-    
 
     public static void main(String[] args) {
         deck.newDeck();
@@ -51,11 +50,10 @@ public class Game1 {
                     System.out.print(player2[i]);
                 }
             }
-    }
+        }
         System.out.println("\n");
-}
+    }
 
-    
     static void player1TakesCards(int stCount) {
         int previousCard;
         if (stCount == 0) {
@@ -97,27 +95,24 @@ public class Game1 {
             System.out.println("player1 wins");
         } else {
             int stepResult = player1[stCount].getPower() - player2[stCount].getPower();
-            if (stepResult > 0) {
-                if (stepResult < 8) {
+            switch (stepResult) {
+                case (-8):
                     player1TakesCards(stCount);
-                    mainGame(currentCard % deck.startDeck.length);
-                } else {
+                    break;
+                case (0):
+                    currentCard += 2;
+                    break;
+                case (8):
                     player2TakesCards(stCount);
-                    mainGame(currentCard % deck.startDeck.length);
-                }
-            } else if (stepResult < 0) {
-                if (stepResult > -8) {
-                    player2TakesCards(stCount);
-                    mainGame(currentCard % deck.startDeck.length);
-                } else {
-                    player1TakesCards(stCount);
-                    mainGame(currentCard % deck.startDeck.length);
-                }
-            } else {
-                currentCard += 2;
-                mainGame(currentCard % deck.startDeck.length);
+                    break;
+                default:
+                    if (stepResult > 0) {
+                        player1TakesCards(stCount);
+                    } else {
+                        player2TakesCards(stCount);
+                    }
             }
-
+            mainGame(currentCard % deck.startDeck.length);
+            }
         }
     }
-}
