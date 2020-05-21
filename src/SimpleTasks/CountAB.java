@@ -6,12 +6,10 @@ public class CountAB {
 
 
     public static void main(String[] args) {
-        int[][] ar = new int[4][3];
-//        Scanner scanner = new Scanner(System.in);
-//        int a = scanner.nextInt();
-//        int b = scanner.nextInt();
-//        count(a,b);
-        System.out.println(ar.length);
+        Scanner scanner = new Scanner(System.in);
+        int a = scanner.nextInt();
+        int b = scanner.nextInt();
+        count(a,b);
     }
     static void count(int a, int b){
         if(a < b){
