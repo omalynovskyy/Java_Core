@@ -52,4 +52,5 @@ public class Point extends GeometricalObject {
         x = -x;
         y = -y;
     }
+
 }
