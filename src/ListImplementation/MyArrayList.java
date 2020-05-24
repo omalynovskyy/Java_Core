@@ -7,16 +7,16 @@ import java.util.ListIterator;
 
 public class MyArrayList<E> implements List<E> {
 
-    private E[] myArrayList;
+    private Object[] start = new Object[10];
+    private E[] myArrayList = (E[]) start.clone();
     private int size;
 
     @Override
     public int size() {
         int i = 0;
-        do {
+        while (myArrayList[i] != null) {
             i++;
-        } while (myArrayList[i] != null);
-        return i;
+        };
     }
 
     @Override
@@ -70,12 +70,35 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean add(E e) {
-        ;
+        int i = 0;
+        while (myArrayList[i] != null) {
+            i++;
+        };
+        if ((((i + 1) / myArrayList.length) > 0.75)) {
+            Object[] newArray = new Object[myArrayList.length * 2];
+            E[] extendedArray = (E[]) newArray;
+            extendedArray = myArrayList.clone();
+            myArrayList = extendedArray;
+
+//            может в этом месте есть смысл запустить GarbageCollector ?
+        }
+        myArrayList[i] = e;
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        return false;
+        for(int i = 0; i < myArrayList.length; i++){
+            if(myArrayList[i] == o){
+                for (int j = i; j < myArrayList.length ; j++) {
+                    if (myArrayList[j+1] == null) {
+                        myArrayList[j] = null;
+                    } else {
+                        myArrayList[j] = myArrayList[j+1];
+                    } return true;
+                }
+            } return false;
+        }
     }
 
     @Override
