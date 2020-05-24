@@ -93,11 +93,12 @@ public class MyArrayList<E> implements List<E> {
                 for (int j = i; j < myArrayList.length ; j++) {
                     if (myArrayList[j+1] == null) {
                         myArrayList[j] = null;
+                        return true;
                     } else {
                         myArrayList[j] = myArrayList[j+1];
                     }
                 }
-            } return true;
+            }
         } return false;
     }
 
