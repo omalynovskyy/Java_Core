@@ -16,7 +16,7 @@ public class MyArrayList<E> implements List<E> {
         int i = 0;
         while (myArrayList[i] != null) {
             i++;
-        };
+        } return i;
     }
 
     @Override
@@ -95,10 +95,10 @@ public class MyArrayList<E> implements List<E> {
                         myArrayList[j] = null;
                     } else {
                         myArrayList[j] = myArrayList[j+1];
-                    } return true;
+                    }
                 }
-            } return false;
-        }
+            } return true;
+        } return false;
     }
 
     @Override
