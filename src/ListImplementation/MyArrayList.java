@@ -1,9 +1,6 @@
 package ListImplementation;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class MyArrayList<E> implements List<E> {
 
@@ -36,7 +33,7 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<E>() {
-            private int i = 0;
+            private int i = -1;
 
             @Override
             public boolean hasNext() {
@@ -89,7 +86,7 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public boolean remove(Object o) {
         for(int i = 0; i < myArrayList.length; i++){
-            if(myArrayList[i] == o){
+            if(myArrayList[i].equals(o)){
                 for (int j = i; j < myArrayList.length ; j++) {
                     if (myArrayList[j+1] == null) {
                         myArrayList[j] = null;
@@ -104,42 +101,115 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        boolean result = true;
+        for (int i = 0; i < c.size(); i++) {
+            E check = myArrayList[i];
+            result &= c.stream().anyMatch(el -> el.equals(check));
+        }
+        return result;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        int i = 0;
+        while (myArrayList[i] != null) {
+            i++;
+        }
+        if (myArrayList.length <= c.size()) {
+            Object[] newArray = new Object[c.size() * 2];
+            E[] extendedArray = (E[]) newArray;
+            extendedArray = myArrayList.clone();
+            myArrayList = extendedArray;
+        } else if ((c.size() + i) / myArrayList.length >= 0.75) {
+            Object[] newArray = new Object[myArrayList.length * 2];
+            E[] extendedArray = (E[]) newArray;
+            extendedArray = myArrayList.clone();
+            myArrayList = extendedArray;
+        }
+        for (E e : c){
+            myArrayList[++i] = e;
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
+        int i = 0;
+        while (myArrayList[i] != null) {
+            i++;
+        }
+        Object[] newArray;
+        if (myArrayList.length <= c.size()) {
+            newArray = new Object[c.size() * 2];
+        } else if ((c.size() + i) / myArrayList.length >= 0.75) {
+            newArray = new Object[myArrayList.length * 2];
+        } else {newArray = new Object[myArrayList.length];}
+        E[] extendedArray = (E[]) newArray;
+        for (int j = 0; j < index; j++) {
+            extendedArray[j] = myArrayList[j];
+        }
+        for (E e : c){
+            extendedArray[index++] = e;
+        }
+        for (int j = index; j < i + c.size(); j++) {
+            extendedArray[j] = myArrayList[j - c.size()];
+        }
+        myArrayList = extendedArray;
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean result = false;
+        Iterator iterator = c.iterator();
+        while (iterator.hasNext()) {
+            for(int i = 0; i < myArrayList.length; i++){
+                if(myArrayList[i].equals(iterator.next())){
+                    for (int j = i; j < myArrayList.length ; j++) {
+                        if (myArrayList[j+1] == null) {
+                            myArrayList[j] = null;
+                        } else {
+                            myArrayList[j] = myArrayList[j+1];
+                        }
+                    } result = true;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        boolean result = false;
+        Object[] start = new Object[myArrayList.length];
+        E[] newArray = (E[]) start;
+        int k = 0;
+        for (Object o : c) {
+            for (int i = 0; i < myArrayList.length; i++) {
+                if (myArrayList[i].equals(o)) {
+                    newArray[k++] = myArrayList[i];
+                    result = true;
+                }
+            }
+        } myArrayList = newArray;
+        return result;
     }
 
     @Override
     public void clear() {
+        Object[] start = new Object[10];
+        myArrayList = (E[]) start;
 
     }
 
     @Override
     public E get(int index) {
-        return null;
+        return myArrayList[index];
     }
 
     @Override
     public E set(int index, E element) {
-        return null;
+        return myArrayList[index] = element;
     }
 
     @Override
