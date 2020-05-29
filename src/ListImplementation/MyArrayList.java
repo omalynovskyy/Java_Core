@@ -6,7 +6,7 @@ public class MyArrayList<E> implements List<E> {
 
     private Object[] start = new Object[10];
     private E[] myArrayList = (E[]) start.clone();
-    private int size;
+    private int localSize = this.size();
 
     @Override
     public int size() {
@@ -26,8 +26,11 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public boolean contains(Object o) {
         for(E e : myArrayList) {
-            if(e.equals(o)) {return true;}
-        } return false;
+            if(e.equals(o)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -101,20 +104,17 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        boolean result = true;
-        for (int i = 0; i < c.size(); i++) {
-            E check = myArrayList[i];
-            result &= c.stream().anyMatch(el -> el.equals(check));
-        }
-        return result;
+
+        for (Object o : c) {
+            if(!this.contains(o)) {
+                return false;
+            }
+        } return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        int i = 0;
-        while (myArrayList[i] != null) {
-            i++;
-        }
+        int i = this.size();
         if (myArrayList.length <= c.size()) {
             Object[] newArray = new Object[c.size() * 2];
             E[] extendedArray = (E[]) newArray;
@@ -214,36 +214,145 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public void add(int index, E element) {
-
+        int s = this.size();
+        if((s + 1) / myArrayList.length > 0.75) {
+            Object[] newArray = new Object[myArrayList.length * 2];
+            newArray = myArrayList.clone();
+            myArrayList = (E[]) newArray;
+        }
+        for (int i = s + 1; i > index ;) {
+            myArrayList[i] = myArrayList[--i];
+        }
+        myArrayList[index] = element;
     }
+
+
 
     @Override
     public E remove(int index) {
-        return null;
+        E element = myArrayList[index];
+        for (int i = index; i < this.size();) {
+            myArrayList[i] = myArrayList[++i];
+        }
+        return element;
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        for (int i = 0; i < myArrayList.length; i++) {
+            if(myArrayList[i].equals(o)){return i;}
+        } return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        int index = -1;
+        for (int i = 0; i < myArrayList.length; i++) {
+            if(myArrayList[i].equals(o)){index = i;}
+        } return index;
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        return null;
+        ListIterator<E> listIterator = new ListIterator<>() {
+            private int i = -1;
+            private boolean changeAllowed = false;
+
+            @Override
+            public boolean hasNext() {
+                if (myArrayList[i + 1] == null) {
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public E next() {
+                changeAllowed = true;
+                return myArrayList[++i];
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                try {
+                    if (myArrayList[i - 1] == null) {
+                        return false;
+                    }
+                    return true;
+                } catch (IndexOutOfBoundsException e) {
+                    return false;
+                }
+            }
+
+            @Override
+            public E previous() {
+                if (this.hasPrevious()) {
+                    changeAllowed = true;
+                    return myArrayList[--i];
+                }
+                throw new NoSuchElementException();
+            }
+
+
+            @Override
+
+            public int nextIndex() {
+                if(i >= localSize) {return localSize;}
+                return i + 1;
+            }
+
+            @Override
+            public int previousIndex() {
+                if(i <= 0) {return -1;}
+                return i - 1;
+            }
+
+            @Override
+            public void remove() {
+                if(changeAllowed) {
+                    for (int j = i; j < localSize;) {
+                        myArrayList[i] = myArrayList[++i];
+                    } changeAllowed = false;
+                } throw new IllegalStateException();
+            }
+
+            @Override
+            public void set(E e) {
+                if(changeAllowed) {
+                    myArrayList[i] = e;
+                    changeAllowed = false;
+                } throw new IllegalStateException();
+            }
+
+
+            @Override
+            public void add(E e) {
+                if((localSize + 1) / myArrayList.length > 0.75) {
+                    Object[] newArray;
+                    newArray = Arrays.copyOf(myArrayList, 2 * myArrayList.length);
+                    myArrayList = (E[]) newArray;
+                }
+                for (int j = localSize + 1; j > i;) {
+                    myArrayList[i] = myArrayList[--i];
+                }
+                myArrayList[i] = e;
+                i++;
+            }
+        }; return listIterator;
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
+        // это тоже то и предыдущий только стартовый интекс примет переданное знаение
         return null;
     }
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return null;
+        List<E> newList = null;
+        for (int i = fromIndex; i < toIndex; i++) {
+            newList.add(this.get(i));
+        }
+        return newList;
     }
 }
