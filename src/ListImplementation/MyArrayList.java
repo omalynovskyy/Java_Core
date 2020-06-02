@@ -11,16 +11,18 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public int size() {
         int i = 0;
-        while (myArrayList[i] != null) {
-            i++;
+        for (int j = 0; j < myArrayList.length; j++) {
+            if(myArrayList != null) {
+                i++;
+            }
         } return i;
     }
 
     @Override
     public boolean isEmpty() {
-        if(myArrayList[0] == null) {
+        if(this.size() == 0) {
             return true;
-        } else {return false;}
+        } return false;
     }
 
     @Override
@@ -40,9 +42,13 @@ public class MyArrayList<E> implements List<E> {
 
             @Override
             public boolean hasNext() {
-                if (myArrayList[i+1] == null) {
-                return false;
-                } else return true;
+                try {
+                    if (myArrayList[i+1] == null) {
+                        return false;
+                    } else return true;
+                } catch (IndexOutOfBoundsException e) {
+                    return false;
+                }
             }
 
             @Override
@@ -54,8 +60,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        Object[] objects = myArrayList.clone();
-        return objects;
+        return (Object[]) Arrays.copyOf(myArrayList,myArrayList.length);
     }
 
     @Override
@@ -70,19 +75,10 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean add(E e) {
-        int i = 0;
-        while (myArrayList[i] != null) {
-            i++;
-        };
-        if ((((i + 1) / myArrayList.length) > 0.75)) {
-            Object[] newArray = new Object[myArrayList.length * 2];
-            E[] extendedArray = (E[]) newArray;
-            extendedArray = myArrayList.clone();
-            myArrayList = extendedArray;
-
-//            может в этом месте есть смысл запустить GarbageCollector ?
+        if (!(this.size() < myArrayList.length)) {
+            myArrayList = Arrays.copyOf(myArrayList, this.size() * 2);
         }
-        myArrayList[i] = e;
+        myArrayList[this.size() + 1] = e;
         return true;
     }
 
