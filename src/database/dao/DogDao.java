@@ -115,9 +115,6 @@ public class DogDao {
     public void deleteDog(String id) {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, userInfo);
              PreparedStatement statement = connection.prepareStatement("DELETE FROM DOGS WHERE id = ?")) {
-            System.out.println("Please provide the Dog id to delete");
-            Scanner scanner = new Scanner(System.in);
-            id = scanner.nextLine().trim();
             statement.setString(1, id);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -128,13 +125,8 @@ public class DogDao {
     public void updateDogAge(String id, int age) {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, userInfo);
              PreparedStatement statement = connection.prepareStatement("UPDATE DOGS SET age = ? WHERE id = ?")) {
-            System.out.println("Please provide the Dog id to update");
-            Scanner scanner = new Scanner(System.in);
-            id = scanner.nextLine().trim();
-            System.out.println("Please provide the new Dog age");
-            age = scanner.nextInt();
-            statement.setString(1, id;
-            statement.setInt(2, age);
+            statement.setString(2, id);
+            statement.setInt(1, age);
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getErrorCode());

@@ -23,6 +23,7 @@ public class Main {
         while (true) {
             System.out.println("Type operation:\n create - to create a dog table\n add - for adding new dog\n get - get info about all dogs\n " +
                     "gName - get all dogs by name\n gAge - get all dogs older than specified age\n" +
+                    "uAge - update the Dog's age\n delete - delete the Dog's record from table\n" +
                     "exit - for quit from program");
             String operation = scanner.nextLine().trim();
 
@@ -36,8 +37,15 @@ public class Main {
                 case "gName":
                     getDogByName(scanner,dogDao);
                     break;
+                case "uAge":
+                    updateDogAge(scanner, dogDao);
+                    break;
                 case "get":
-
+                    getAllDogs(dogDao);
+                    break;
+                case "delete":
+                    deleteDog(scanner, dogDao);
+                    break;
                 case "exit":
                     System.exit(0);
                 default:
@@ -75,5 +83,19 @@ public class Main {
                 .map(Dog::toString)
                 .collect(Collectors.joining("\n"));
         System.out.println(collect);
+    }
+
+    public static void updateDogAge(Scanner scanner, DogDao dao) {
+        System.out.println("Please provide the Dog id to update");
+        String id = scanner.nextLine().trim();
+        System.out.println("Please provide the new Dog age");
+        int age = scanner.nextInt();
+        dao.updateDogAge(id, age);
+    }
+
+    public static void deleteDog (Scanner scanner, DogDao dao) {
+        System.out.println("Please provide the Dog id to delete");
+        String id = scanner.nextLine().trim();
+        dao.deleteDog(id);
     }
 }
