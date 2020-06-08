@@ -112,15 +112,9 @@ public class MyArrayList<E> implements List<E> {
     public boolean addAll(Collection<? extends E> c) {
         int i = this.size();
         if (myArrayList.length <= c.size()) {
-            Object[] newArray = new Object[c.size() * 2];
-            E[] extendedArray = (E[]) newArray;
-            extendedArray = myArrayList.clone();
-            myArrayList = extendedArray;
+            myArrayList = Arrays.copyOf(myArrayList, 2 * c.size());
         } else if ((c.size() + i) / myArrayList.length >= 0.75) {
-            Object[] newArray = new Object[myArrayList.length * 2];
-            E[] extendedArray = (E[]) newArray;
-            extendedArray = myArrayList.clone();
-            myArrayList = extendedArray;
+            myArrayList = Arrays.copyOf(myArrayList, 2 * myArrayList.length);
         }
         for (E e : c){
             myArrayList[++i] = e;
@@ -130,10 +124,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        int i = 0;
-        while (myArrayList[i] != null) {
-            i++;
-        }
+        int i = this.size();
         Object[] newArray;
         if (myArrayList.length <= c.size()) {
             newArray = new Object[c.size() * 2];
@@ -156,22 +147,10 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        boolean result = false;
-        Iterator iterator = c.iterator();
-        while (iterator.hasNext()) {
-            for(int i = 0; i < myArrayList.length; i++){
-                if(myArrayList[i].equals(iterator.next())){
-                    for (int j = i; j < myArrayList.length ; j++) {
-                        if (myArrayList[j+1] == null) {
-                            myArrayList[j] = null;
-                        } else {
-                            myArrayList[j] = myArrayList[j+1];
-                        }
-                    } result = true;
-                }
-            }
+        for (Object o : c) {
+            this.remove(o);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -193,8 +172,8 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public void clear() {
-        Object[] start = new Object[10];
-        myArrayList = (E[]) start;
+
+        myArrayList = (E[]) start.clone();
 
     }
 
@@ -212,9 +191,7 @@ public class MyArrayList<E> implements List<E> {
     public void add(int index, E element) {
         int s = this.size();
         if((s + 1) / myArrayList.length > 0.75) {
-            Object[] newArray = new Object[myArrayList.length * 2];
-            newArray = myArrayList.clone();
-            myArrayList = (E[]) newArray;
+            myArrayList = Arrays.copyOf(myArrayList, 2 * myArrayList.length);
         }
         for (int i = s + 1; i > index ;) {
             myArrayList[i] = myArrayList[--i];
@@ -324,9 +301,7 @@ public class MyArrayList<E> implements List<E> {
             @Override
             public void add(E e) {
                 if((localSize + 1) / myArrayList.length > 0.75) {
-                    Object[] newArray;
-                    newArray = Arrays.copyOf(myArrayList, 2 * myArrayList.length);
-                    myArrayList = (E[]) newArray;
+                    myArrayList = Arrays.copyOf(myArrayList, myArrayList.length * 2);
                 }
                 for (int j = localSize + 1; j > i;) {
                     myArrayList[i] = myArrayList[--i];
