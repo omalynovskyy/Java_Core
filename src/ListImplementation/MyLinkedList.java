@@ -2,19 +2,19 @@ package ListImplementation;
 
 import java.util.*;
 
-public class MyLinkedList<E> implements List {
+public class MyLinkedList<E> implements List<E> {
 
-    Collection<ListElement> elements;
-    ListElement firstElement;
-    ListElement lastElement;
+    Collection<ListElement<E>> elements;
+    ListElement<E> firstElement;
+    ListElement<E> lastElement;
 
-    int size;
 
-    private class ListElement<E> {
+
+    private static class ListElement<E> {
         E element;
 
-        ListElement previousElement;
-        ListElement nextElement;
+        ListElement<E> previousElement;
+        ListElement<E> nextElement;
 
         public ListElement(E element) {
             this.element = element;
@@ -23,11 +23,11 @@ public class MyLinkedList<E> implements List {
 
     @Override
     public int size() {
-        size = 0;
+        int size = 0;
         if (firstElement == null) {
             return size;
         }
-        ListElement e = firstElement;
+        ListElement<E> e = firstElement;
         do {
             size++;
             e = e.nextElement;
@@ -37,16 +37,13 @@ public class MyLinkedList<E> implements List {
 
     @Override
     public boolean isEmpty() {
-        if (this.size() == 0) {
-            return true;
-        }
-        return false;
+        return this.size() == 0;
     }
 
     @Override
     public boolean contains(Object o) {
         if (this.size() == 0) {return false;}
-        ListElement e = firstElement;
+        ListElement<E> e = firstElement;
         while (!e.element.equals(o)){
             if (e.nextElement == null) {return false;}
             e = e.nextElement;
@@ -55,13 +52,13 @@ public class MyLinkedList<E> implements List {
     }
 
     @Override
-    public Iterator iterator() {
-        Iterator<E> iterator = new Iterator<E>() {
+    public Iterator<E> iterator() {
+        return new Iterator<>() {
             ListElement<E> currentElement = firstElement;
+
             @Override
             public boolean hasNext() {
-                if (currentElement.nextElement == null) {return false;}
-                return true;
+                return currentElement.nextElement != null;
             }
 
             @Override
@@ -69,17 +66,18 @@ public class MyLinkedList<E> implements List {
                 currentElement = currentElement.nextElement;
                 if (currentElement == null) {
                     throw new NoSuchElementException();
-                } else {return currentElement.element;}
+                } else {
+                    return currentElement.element;
+                }
             }
         };
-        return iterator;
     }
 
     @Override
     public Object[] toArray() {
         Object[] array = new Object[this.size()];
         int i = 0;
-        ListElement e = firstElement;
+        ListElement<E> e = firstElement;
         while (e != null) {
             array[i++] = e.element;
             e = e.nextElement;
@@ -89,7 +87,7 @@ public class MyLinkedList<E> implements List {
 
     @Override
     public boolean add(Object o) {
-        ListElement newElement = new ListElement((E) o);
+        ListElement<E> newElement = new ListElement<E>((E) o);
         if (this.size() == 0) {
             firstElement = newElement;
         } else {
@@ -104,7 +102,7 @@ public class MyLinkedList<E> implements List {
 
     @Override
     public boolean remove(Object o) {
-        ListElement e = firstElement;
+        ListElement<E> e = firstElement;
         while (!e.element.equals(o)){
             if (e.nextElement == null) {return false;}
             e = e.nextElement;
@@ -142,7 +140,7 @@ public class MyLinkedList<E> implements List {
     // вот не уверен или такой подход правильный, но ты мне скажи )); альтернативой может бить объявление новой коллекции
     @Override
     public void clear() {
-        for (ListElement e : elements) {
+        for (ListElement<E> e : elements) {
             elements.remove(e);
         }
 
@@ -150,7 +148,7 @@ public class MyLinkedList<E> implements List {
 
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
-    public Object get(int index) {
+    public E get(int index) {
         return null;
     }
 
@@ -168,7 +166,7 @@ public class MyLinkedList<E> implements List {
 
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
-    public Object remove(int index) {
+    public E remove(int index) {
         return null;
     }
 
@@ -185,16 +183,15 @@ public class MyLinkedList<E> implements List {
     }
 
     @Override
-    public ListIterator listIterator() {
-        ListIterator<E> listIterator = new ListIterator<E>() {
+    public ListIterator<E> listIterator() {
+        return new ListIterator<>() {
             ListElement<E> currentElement = firstElement;
             E currentObject = currentElement.element;
-            boolean removeAllowed = false;
+            boolean modifyAllowed = false;
 
             @Override
             public boolean hasNext() {
-                if (currentElement.nextElement == null) {return false;}
-                return true;
+                return currentElement.nextElement != null;
             }
 
             @Override
@@ -203,16 +200,14 @@ public class MyLinkedList<E> implements List {
                 if (currentElement == null) {
                     throw new NoSuchElementException();
                 } else {
-                    removeAllowed = true;
+                    modifyAllowed = true;
                     return currentElement.element;
                 }
             }
 
-
             @Override
             public boolean hasPrevious() {
-                if (currentElement.previousElement == null) {return false;}
-                return true;
+                return currentElement.previousElement != null;
             }
 
             @Override
@@ -221,7 +216,7 @@ public class MyLinkedList<E> implements List {
                 if (currentElement == null) {
                     throw new NoSuchElementException();
                 } else {
-                    removeAllowed = true;
+                    modifyAllowed = true;
                     return currentElement.element;
                 }
             }
@@ -240,7 +235,7 @@ public class MyLinkedList<E> implements List {
 
             @Override
             public void remove() {
-                if (removeAllowed) {
+                if (modifyAllowed) {
                     if (currentElement == firstElement) {
                         firstElement = currentElement.nextElement;
                         currentElement.nextElement.previousElement = null;
@@ -255,7 +250,7 @@ public class MyLinkedList<E> implements List {
                         currentElement = currentElement.nextElement;
                     }
                     elements.remove(currentElement);
-                    removeAllowed = false;
+                    modifyAllowed = false;
                 }
 
             }
@@ -275,37 +270,67 @@ public class MyLinkedList<E> implements List {
 
             }
         };
-        return listIterator;
     }
 
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
-    public ListIterator listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {
         return null;
     }
 
+    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
-    public List subList(int fromIndex, int toIndex) {
+    public List<E> subList(int fromIndex, int toIndex) {
         return null;
     }
 
     @Override
     public boolean retainAll(Collection c) {
-        return false;
+        boolean result = false;
+        for (Object o : c) {
+            if (!this.contains(o)) {
+                this.remove(o);
+                result = true;
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean removeAll(Collection c) {
-        return false;
+        boolean result = false;
+        for (Object o : c) {
+            if (this.contains(o)) {
+                this.remove(o);
+                result = true;
+            }
+        }
+        return result;
     }
 
     @Override
     public boolean containsAll(Collection c) {
-        return false;
+        for (Object o : c) {
+            if (!this.contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public Object[] toArray(Object[] a) {
-        return new Object[0];
+        if (a.length < this.size()) {
+            a = new Object[this.size()];
+        }
+        int i = 0;
+        Iterator<E> itr = this.iterator();
+        do {
+            a[i++] = itr.next();
+        } while (itr.hasNext());
+        for (int j = this.size(); j < a.length; j++) {
+            a[i] = null;
+        }
+        return a;
     }
 }
