@@ -7,6 +7,7 @@ public class MyLinkedList<E> implements List<E> {
     Collection<ListElement<E>> elements;
     ListElement<E> firstElement;
     ListElement<E> lastElement;
+    int size = 0;
 
 
 
@@ -15,6 +16,7 @@ public class MyLinkedList<E> implements List<E> {
 
         ListElement<E> previousElement;
         ListElement<E> nextElement;
+        int index = 0;
 
         public ListElement(E element) {
             this.element = element;
@@ -23,16 +25,16 @@ public class MyLinkedList<E> implements List<E> {
 
     @Override
     public int size() {
-        int size = 0;
-        if (firstElement == null) {
-            return size;
-        }
-        ListElement<E> e = firstElement;
-        do {
-            size++;
-            e = e.nextElement;
-        } while (e != null);
-        return size;
+//        int size = 0;
+//        if (firstElement == null) {
+//            return size;
+//        }
+//        ListElement<E> e = firstElement;
+//        do {
+//            size++;
+//            e = e.nextElement;
+//        } while (e != null);
+        return lastElement.index + 1;
     }
 
     @Override
@@ -93,9 +95,11 @@ public class MyLinkedList<E> implements List<E> {
         } else {
             lastElement.nextElement = newElement;
             newElement.previousElement = lastElement;
+            newElement.index = newElement.previousElement.index + 1;
         }
         lastElement = newElement;
         elements.add(newElement);
+
 
         return true;
     }
@@ -117,6 +121,10 @@ public class MyLinkedList<E> implements List<E> {
         e.previousElement.nextElement = e.nextElement;
         e.nextElement.previousElement = e.previousElement;
         }
+        while (e != null){
+            e.index--;
+            e = e.nextElement;
+        }
         // не уверен или так можно: "e.nextElement.previousElement", тогда альтернативой наверное через промежуточные переменные?
         elements.remove(e);
         return true;
@@ -134,6 +142,17 @@ public class MyLinkedList<E> implements List<E> {
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public boolean addAll(int index, Collection c) {
+        ListElement<E> e = firstElement;
+        if (index < this.size/2) {
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        
         return false;
     }
 
