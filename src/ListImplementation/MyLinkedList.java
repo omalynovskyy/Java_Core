@@ -100,7 +100,6 @@ public class MyLinkedList<E> implements List<E> {
         lastElement = newElement;
         elements.add(newElement);
 
-
         return true;
     }
 
@@ -125,7 +124,6 @@ public class MyLinkedList<E> implements List<E> {
             e.index--;
             e = e.nextElement;
         }
-        // не уверен или так можно: "e.nextElement.previousElement", тогда альтернативой наверное через промежуточные переменные?
         elements.remove(e);
         return true;
     }
@@ -142,18 +140,33 @@ public class MyLinkedList<E> implements List<E> {
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public boolean addAll(int index, Collection c) {
-        ListElement<E> e = firstElement;
+        ListElement<E> e;
         if (index < this.size/2) {
+            e = firstElement;
             while (e.index < index) {
                 e = e.nextElement;
             }
         } else {
+            e = lastElement;
             while (e.index > index) {
                 e = e.previousElement;
             }
         }
+        for (Object o : c) {
+            ListElement<E> addedElement = new ListElement<E>((E) o);
+            addedElement.previousElement = e;
+            addedElement.nextElement = e.nextElement;
+            e.nextElement.previousElement = addedElement;
+            e.nextElement = addedElement;
+            addedElement.index = e.index + 1;
+            e = addedElement;
+        }
+        while (e.nextElement != null) {
+            e = e.nextElement;
+            e.index = e.previousElement.index + 1;
+        }
         
-        return false;
+        return true;
     }
 
     // вот не уверен или такой подход правильный, но ты мне скажи )); альтернативой может бить объявление новой коллекции
@@ -165,40 +178,122 @@ public class MyLinkedList<E> implements List<E> {
 
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public E get(int index) {
-        return null;
+        ListElement<E> e;
+        if (index < this.size/2) {
+            e = firstElement;
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            e = lastElement;
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        return e.element;
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
-    public Object set(int index, Object element) {
-        return null;
+    public E set(int index, Object element) {
+        ListElement<E> e;
+        if (index < this.size/2) {
+            e = firstElement;
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            e = lastElement;
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        E previousElement = e.element;
+        e.element = (E) element;
+        return previousElement;
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public void add(int index, Object element) {
+        ListElement<E> e;
+        if (index < this.size/2) {
+            e = firstElement;
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            e = lastElement;
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        ListElement<E> addedElement = new ListElement<E>((E) element);
+        addedElement.previousElement = e;
+        addedElement.nextElement = e.nextElement;
+        e.nextElement.previousElement = addedElement;
+        e.nextElement = addedElement;
+        addedElement.index = e.index + 1;
+        e = addedElement;
+
+        while (e.nextElement != null) {
+            e = e.nextElement;
+            e.index = e.previousElement.index + 1;
+        }
 
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public E remove(int index) {
-        return null;
+        ListElement<E> e;
+        if (index < this.size/2) {
+            e = firstElement;
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            e = lastElement;
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        if (e == firstElement) {
+            firstElement = e.nextElement;
+            e.nextElement.previousElement = null;
+        } else if (e == lastElement) {
+            lastElement = e.previousElement;
+            e.previousElement.nextElement = null;
+        } else {
+            e.previousElement.nextElement = e.nextElement;
+            e.nextElement.previousElement = e.previousElement;
+        }
+        ListElement<E> removedElement = e;
+        while (e != null){
+            e.index--;
+            e = e.nextElement;
+        }
+        elements.remove(removedElement);
+        return removedElement.element;
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public int indexOf(Object o) {
-        return 0;
+        ListElement<E> e = firstElement;
+        while (!e.element.equals(o)){
+            if (e.nextElement == null) {return -1;}
+            e = e.nextElement;
+        }
+        return e.index;
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        ListElement<E> e = lastElement;
+        while (!e.element.equals(o)){
+            if (e.previousElement == null) {return -1;}
+            e = e.previousElement;
+        }
+        return e.index;
     }
 
     @Override
