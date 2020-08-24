@@ -50,7 +50,7 @@ public class MyLinkedList<E> implements List<E> {
 //            size++;
 //            e = e.nextElement;
 //        } while (e != null);
-        return lastElement.index + 1;
+        return size;
     }
 
     @Override
@@ -105,7 +105,7 @@ public class MyLinkedList<E> implements List<E> {
 
     @Override
     public boolean add(Object o) {
-        ListElement<E> newElement = new ListElement<E>((E) o);
+        ListElement<E> newElement = new ListElement<>((E) o);
         if (this.size() == 0) {
             firstElement = newElement;
         } else {
@@ -136,11 +136,12 @@ public class MyLinkedList<E> implements List<E> {
         e.previousElement.nextElement = e.nextElement;
         e.nextElement.previousElement = e.previousElement;
         }
+        elements.remove(e);
         while (e != null){
             e.index--;
             e = e.nextElement;
         }
-        elements.remove(e);
+
         return true;
     }
 
@@ -168,7 +169,7 @@ public class MyLinkedList<E> implements List<E> {
             }
         }
         for (Object o : c) {
-            ListElement<E> addedElement = new ListElement<E>((E) o);
+            ListElement<E> addedElement = new ListElement<>((E) o);
             addedElement.previousElement = e;
             addedElement.nextElement = e.nextElement;
             e.nextElement.previousElement = addedElement;
@@ -243,7 +244,7 @@ public class MyLinkedList<E> implements List<E> {
                 e = e.previousElement;
             }
         }
-        ListElement<E> addedElement = new ListElement<E>((E) element);
+        ListElement<E> addedElement = new ListElement<>((E) element);
         addedElement.previousElement = e;
         addedElement.nextElement = e.nextElement;
         e.nextElement.previousElement = addedElement;
@@ -315,7 +316,6 @@ public class MyLinkedList<E> implements List<E> {
     public ListIterator<E> listIterator() {
         return new ListIterator<>() {
             ListElement<E> currentElement = firstElement;
-            E currentObject = currentElement.element;
             boolean modifyAllowed = false;
 
             @Override
@@ -404,7 +404,7 @@ public class MyLinkedList<E> implements List<E> {
     @Override
     public ListIterator<E> listIterator(int index) {
 
-        return new ListIterator<E>() {
+        return new ListIterator<>() {
 
             //не уверен, правда, или так правильно вызвать метод из внешнего класса?
             ListElement<E> currentElement = MyLinkedList.this.getByIndex(index);
@@ -495,7 +495,7 @@ public class MyLinkedList<E> implements List<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        List<E> sublist = Collections.emptyList();
+        List<E> sublist = new ArrayList<>(Collections.emptyList());
         ListElement<E> addedElement = this.getByIndex(fromIndex);
         sublist.add(addedElement.element);
         while (addedElement.index < toIndex) {
