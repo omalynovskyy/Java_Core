@@ -7,7 +7,23 @@ public class MyLinkedList<E> implements List<E> {
     Collection<ListElement<E>> elements;
     ListElement<E> firstElement;
     ListElement<E> lastElement;
-    int size = 0;
+    int size = this.size();
+
+    ListElement<E> getByIndex(int index) {
+        ListElement<E> e;
+        if (index < this.size()/2) {
+            e = firstElement;
+            while (e.index < index) {
+                e = e.nextElement;
+            }
+        } else {
+            e = lastElement;
+            while (e.index > index) {
+                e = e.previousElement;
+            }
+        }
+        return e;
+    }
 
 
 
@@ -137,7 +153,6 @@ public class MyLinkedList<E> implements List<E> {
         return result;
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public boolean addAll(int index, Collection c) {
         ListElement<E> e;
@@ -335,16 +350,14 @@ public class MyLinkedList<E> implements List<E> {
                 }
             }
 
-            // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
             @Override
             public int nextIndex() {
-                return 0;
+                return currentElement.index + 1;
             }
 
-            // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
             @Override
             public int previousIndex() {
-                return 0;
+                return currentElement.index - 1;
             }
 
             @Override
@@ -381,6 +394,7 @@ public class MyLinkedList<E> implements List<E> {
                 newElement.previousElement = currentElement.previousElement;
                 newElement.nextElement = currentElement;
                 currentElement.previousElement = newElement;
+                elements.add(newElement);
 
             }
         };
@@ -389,13 +403,106 @@ public class MyLinkedList<E> implements List<E> {
     // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public ListIterator<E> listIterator(int index) {
-        return null;
+
+        return new ListIterator<E>() {
+
+            //не уверен, правда, или так правильно вызвать метод из внешнего класса?
+            ListElement<E> currentElement = MyLinkedList.this.getByIndex(index);
+
+            boolean modifyAllowed = false;
+
+            @Override
+            public boolean hasNext() {
+                return currentElement.nextElement != null;
+            }
+
+            @Override
+            public E next() {
+                currentElement = currentElement.nextElement;
+                if (currentElement == null) {
+                    throw new NoSuchElementException();
+                } else {
+                    modifyAllowed = true;
+                    return currentElement.element;
+                }
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return currentElement.previousElement != null;
+            }
+
+            @Override
+            public E previous() {
+                currentElement = currentElement.previousElement;
+                if (currentElement == null) {
+                    throw new NoSuchElementException();
+                } else {
+                    modifyAllowed = true;
+                    return currentElement.element;
+                }
+            }
+
+            @Override
+            public int nextIndex() {
+                return currentElement.index + 1;
+            }
+
+            @Override
+            public int previousIndex() {
+                return currentElement.index - 1;
+            }
+
+            @Override
+            public void remove() {
+                if (modifyAllowed) {
+                    if (currentElement == firstElement) {
+                        firstElement = currentElement.nextElement;
+                        currentElement.nextElement.previousElement = null;
+                        currentElement = firstElement;
+                    } else if (currentElement == lastElement) {
+                        lastElement = currentElement.previousElement;
+                        currentElement.previousElement.nextElement = null;
+                        currentElement = lastElement;
+                    } else {
+                        currentElement.previousElement.nextElement = currentElement.nextElement;
+                        currentElement.nextElement.previousElement = currentElement.previousElement;
+                        currentElement = currentElement.nextElement;
+                    }
+                    elements.remove(currentElement);
+                    modifyAllowed = false;
+                }
+
+            }
+
+            @Override
+            public void set(E e) {
+                currentElement.element = e;
+            }
+
+            @Override
+            public void add(E e) {
+                ListElement<E> newElement = new ListElement<>(e);
+                currentElement.previousElement.nextElement = newElement;
+                newElement.previousElement = currentElement.previousElement;
+                newElement.nextElement = currentElement;
+                currentElement.previousElement = newElement;
+                elements.add(newElement);
+
+            }
+        };
     }
 
-    // учитывая что этот лист не содержит индексов то этот метод переопределать не нужно?
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return null;
+        List<E> sublist = Collections.emptyList();
+        ListElement<E> addedElement = this.getByIndex(fromIndex);
+        sublist.add(addedElement.element);
+        while (addedElement.index < toIndex) {
+            addedElement = addedElement.nextElement;
+            sublist.add(addedElement.element);
+        }
+        return sublist;
     }
 
     @Override
